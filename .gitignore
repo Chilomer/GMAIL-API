@@ -1,2 +1,5 @@
 # Ignore folder named `vendor`
 vendor/
+
+# Ignore file named `client_secrets.json`
+client_secrets.json
