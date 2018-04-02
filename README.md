@@ -18,7 +18,7 @@ This project is a mailer using the gmail-api that permits to read, response or s
     5. In javascript origin "http://localhost"
     6. In URI's redirect "http://localhost/oauth2callback.php"
     7. Download the json and replace the content in client_secrets.json
-8.- in the console in the main folder composer install
+    8.- in the console in the main folder composer install
 ~~~
 
 ## Deployment
