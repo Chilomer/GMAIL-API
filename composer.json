@@ -1,0 +1,16 @@
+{
+    "name": "CRM Mail",
+    "description": "mail sync",
+    "keywords": ["crm", "mail"],
+    "license": "private",
+    "type": "project",
+    "require": {
+        "monolog/monolog": "1.17.*",
+        "php": ">=7.0.0",
+        "google/apiclient": "2.0",
+        "pear/mail_mime": "dev-master",
+        "pear/mail_mime-decode": "dev-master",
+        "pear/pear_exception": "dev-master",
+        "php-mime-mail-parser/php-mime-mail-parser": "^2.11"
+    }
+}
