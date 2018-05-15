@@ -20,12 +20,18 @@
         // get message
         $messageId = $_GET["id"];
 
-        $gMessage = $mail->users_messages->get('me',$messageId,['format' => 'raw']);
-        $messageDetails = $gMessage->getPayload();
-        echo $messageDetails['parts'];
-        
+        $gMessage1 = $mail->users_messages->get('me',$messageId,['format' => 'raw']);
+        $messageDetails = $gMessage1->getPayload();
+        $dcMessage1 = base64url_decode($gMessage1->getRaw());
 
-        $threadId = $gMessage->threadId;
+        if($dcMessage1 !== '' && $dcMessage1 !== null){
+            $mimeDecode->setText($dcMessage1);
+            $htmlEmbedded1 = $mimeDecode->getMessageBody('htmlEmbedded'); //HTML Body included data
+        }
+
+        $mimeDecode->setText($dcMessage1);
+
+        $threadId = $gMessage1->threadId;
         //get message thread
         $threads = $mail->users_threads->get('me', $threadId)->getMessages();
         
@@ -36,7 +42,7 @@
             $dcMessage = base64url_decode($gMessage->getRaw());
 
             $messageDetals = $gMessage->getPayload();
-            echo json_encode($messageDetals) . '<br>';
+            // echo json_encode($messageDetals) . '<br>';
             //echo json_encode($messageDetals['parts']) . '<br>';
             // foreach ($messageDetals['parts'] as $value) {
             //     if (!isset($value['body']['data'])) {
@@ -122,6 +128,7 @@
                 <input type="text" readonly class="form-control" value="<?php print $subject ?>" id="subject" name="subject" aria-describedby="emailHelp" placeholder="Asunto">
             </div>
             <?php
+            print $htmlEmbedded1;
                 foreach($threadMessages as $msg){
             ?>
                  <div class="row set-padding-right separator">

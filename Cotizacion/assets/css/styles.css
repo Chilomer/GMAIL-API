@@ -1,0 +1,60 @@
+body{
+}
+
+.mail-list{
+
+}
+
+.mail-list .mail-list-item{
+    cursor: pointer;
+}
+
+.mail-list .mail-list-item.mail-read{
+    background-color: #EEEEEE;
+}
+
+.toolbar{
+    background-color: #3F51B5;
+    height: 70px;
+    color:#fff;
+    font-size:24px;
+    font-weight: bold;
+    padding: 15px 0 0 15px;
+
+}
+
+.main-content{
+    padding:20px 40px !important;
+}
+
+.sbtitle{
+    
+    color: #BDBDBD !important;
+}
+
+.set-padding{
+    padding:0 20px 20px ;
+}
+
+.set-padding-right{
+    padding-right:20px;
+}
+
+.set-padding-left{
+    padding-right:20px;
+}
+.set-color-blue{
+    color:#007DFF!important;
+}
+
+.set-margin-bottom{
+    margin-bottom:20px;
+}
+
+.set-margin-right{
+    margin-right:20px;
+}
+
+.separator{
+    border-bottom: 2px dotted #EEEE;
+}

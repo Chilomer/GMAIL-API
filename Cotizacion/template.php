@@ -1,4 +1,4 @@
-<?php include('gmail.php');
+<?php ;
 ?>
 <html UTF-8>
 	<head>
@@ -11,13 +11,8 @@
 		<div class="container-fluid">
 			<div class="row toolbar">
 				<div class="col">
-					TOTALL CRM - Aplicación de Correo
+					TOTALL CRM - Cotizaciones
 				</div>
-				<form>
-					<button type="submit" class="btn btn-outline-light set-margin-right" name="goOut" value="goOut">
-                        <i class="material-icons">exit_to_app</i>                    
-                    </button>
-				</form>
 			</div>
 		</div>
 		<div class="container-fluid main-content">

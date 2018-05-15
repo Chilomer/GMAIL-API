@@ -10,10 +10,6 @@
 	}
 
 	$backPageToken = '';
-	$inboxMessage[] = [
-		'from' => 'No se encontraron resultados',
-		'messageSubject' => ''
-	];
 	if( !isset($_SESSION['page']) ){
 		$_SESSION['page'] = 1;
 	}
@@ -83,7 +79,8 @@
 		</div>
 		<ul class="list-group mail-list">
 		<?php 
-			foreach($inboxMessage as $msg){ 
+			if(isset($inboxMessage)){
+				foreach($inboxMessage as $msg){ 
 		?>
 			<li class="list-group-item mail-list-item <?php if(!$msg['read']) print 'mail-read'; else print ''; ?>">
 				<div class="row">
@@ -92,13 +89,12 @@
 							<?php print $msg['from']; 
 								if(!$msg['read']) { ?> 
 									<span class="badge badge-secondary">New</span>
-								<?php } ?>
+								<?php } 
+								?>
 						</h6>
 					</div>
 					<div class="col-8">
-						<?php print $msg['messageSubject'];
-							if($msg['from'] !== 'No se encontraron resultados') {
-						?>
+					<?php print $msg['messageSubject'];?> 
 						<form class="set-padding-left">
 							<button type="submit" name="responseMail" value="<?php print $msg['messageId'] ?>" class="close set-color-blue" aria-label="Close">
 								<i class="material-icons">reply</i>
@@ -109,12 +105,28 @@
 								<i class="material-icons">remove_red_eye</i>
 							</button>
 						<form>
-							<?php } ?>
 					</div>
 				</div>
 			</li>
-			<?php } ?>
+			<?php 
+				}
+			}else {
+				?>
+				<li class="list-group-item mail-list-item ">
+					<div class="row">
+						<div class="col-5"></div>
+						<div class="col-3">
+							No se encontraron resultados
+						</div>
+						<div class="col-5"></div>
+						
+					</div>
+				</li>
+				<?php
+			}
+			 ?>
 		</ul>
+		<?php if(isset($inboxMessage)){ ?>
 		<div class="row set-padding-right">
 			<div class="col">
 				<h6 style="margin:5px 0 0 5px"><?php print 'Página: ' . $_SESSION['page']; ?></h6>
@@ -125,13 +137,12 @@
 				<?php if($_SESSION['page'] !==  1){ ?>
 					<button type="submit" class="btn btn-link" name="previousPage" value="previousPage">Página anterior</button>
 				<?php } ?>
-
-				
-				<button type="submit" class="btn btn-link" name="nextPage" value="nextPage">Siguiente página</button>
+								
+					<button type="submit" class="btn btn-link" name="nextPage" value="nextPage">Siguiente página</button>
 			<form>
 				
 		</div>
-
+		<?php } ?>
 		</div>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 	<script
