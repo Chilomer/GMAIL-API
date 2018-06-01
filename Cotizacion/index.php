@@ -1,13 +1,41 @@
 
 <?php include('template.php');
 	require_once "Models/ApiConection.php";
+	session_start();
+	
 	$connection = new apiConnection();
 	$login = $connection->logIn('webapi@totall.com', 'Totall1');
+
+	if(!isset($_SESSION['Articulos'])){
+		$_SESSION['Articulos'] = [];
+	}
+	if(isset($_REQUEST['deleteArticle'])){
+		unset($_SESSION['Articulos'][$_REQUEST['deleteArticle']]);
+	}
+	if( isset($_POST['AddArticle']) ){
+		$articulo = [
+			'clave' => $_POST['clave'],
+			'cantidad' => $_POST['cantidad'],
+			'descripcion' => $_POST['descripcion'],
+			'precio' => number_format((float)$_POST['precio'], 2, '.', ''),
+			'descuento' => number_format((float)$_POST['descuento'], 2, '.', ''),
+			'importe' => number_format((float)(($_POST['cantidad'] *  $_POST['precio']) -  $_POST['descuento']), 2, '.', ''),
+		];
+		array_push($_SESSION['Articulos'], $articulo); 
+	}
+	$subtotal = number_format((float)0, 2, '.', '');
+	$descuento = number_format((float)0, 2, '.', '');;
+	$total= number_format((float)0, 2, '.', '');;
+	foreach($_SESSION['Articulos'] as $artic){
+		$subtotal = number_format((float)(($subtotal + $artic['precio']) * $artic['cantidad']), 2, '.', '');
+		$descuento = number_format((float)($descuento + $artic['descuento']), 2, '.', '');
+		$total = number_format((float)($total + $artic['importe']), 2, '.', '');
+	}
 
 	if(isset($_GET['page']) || isset($_GET['Articulofilter'])){
 		$page = isset($_GET['page']) ? $_GET['page'] : 1;
 		$filter = isset( $_GET['filterInp']) ? $_GET['filterInp'] : '';
-		$articulosConnection = $connection->getArticulo($page, $filter);
+		$articulosConnection = $connection->getArticulo($page, $filter);	
 	} else {
 		$articulosConnection = $connection->getArticulo(1);
 	}
@@ -25,7 +53,7 @@
 	<div class="row">
 		<div class="col-9">
 			<div>
-			<form>
+			<form method="post" name="AddArticle" role="form">
 				<div class="row">
 					<div class="col-3">
 						<div class="form-group">
@@ -37,6 +65,8 @@
 									placeholder="Clave" 
 									aria-label="Clave" 
 									aria-describedby="basic-addon2" 
+									id="clave"
+									name="clave"
 									value="<?php print isset($articulo) ? $articulo->clave : '' ?>">
 								<div class="input-group-append">
 									<button class="btn btn-outline-secondary" id="myModal" type="button" data-toggle="modal" data-target="#exampleModalCenter">
@@ -54,14 +84,14 @@
 					<div class="col-9">			
 						<div class="form-group">
 							<label for="exampleFormControlInput1">Descripcion</label>
-							<input type="text" class="form-control disabled" id="descripcion" value="<?php print isset($articulo) ? $articulo->descripcion : '' ?>" placeholder="Descripcion">
+							<input type="text" class="form-control disabled" id="descripcion" name="descripcion" value="<?php print isset($articulo) ? $articulo->descripcion : '' ?>" placeholder="Descripcion">
 						</div>
 					</div>	
 				</div>
 				<div class="row">
 					<div class="col-3">
 						<label for="exampleFormControlSelect1">Presentación</label>
-						<select class="form-control" id="exampleFormControlSelect1">
+						<select class="form-control" id="presentacion" name="presentacion">
 							<option> <?php print isset($articulo) ? $articulo->presentacion1 : '' ?></option>
 							<?php
 								if(isset($articulo) && trim($articulo->presentacion2) !== '' && trim($articulo->presentacion2) !== null){
@@ -78,24 +108,24 @@
 					<div class="col-2">			
 						<div class="form-group">
 							<label for="exampleFormControlInput1">Cantidad</label>
-							<input type="number" class="form-control" id="cantidad" placeholder="Cantidad" value="1">
+							<input type="number" class="form-control" id="cantidad" name="cantidad" placeholder="Cantidad" value="1">
 						</div>
 					</div>	
 					<div class="col-2">			
 						<div class="form-group">
 							<label for="exampleFormControlInput1">Precio</label>
-							<input type="number" class="form-control" id="precio" placeholder="Precio"
+							<input type="number" class="form-control" id="precio" name="precio" placeholder="Precio"
 								value="<?php print isset($articulo) ? precio($articulo) : 0 ?>">
 						</div>
 					</div>
 					<div class="col-2">			
 						<div class="form-group">
 							<label for="exampleFormControlInput1">Descuento</label>
-							<input type="number" class="form-control" id="Descuento" placeholder="Descuento" value="0">
+							<input type="number" class="form-control" id="descuento" name="descuento" placeholder="Descuento" value="0">
 						</div>
 					</div>
 					<div class="col-1">			
-						<button type="submit" style="margin-top:32px" class="btn btn-outline-secondary set-margin-right" name="goOut" value="goOut">
+						<button type="submit" style="margin-top:32px" class="btn btn-outline-secondary set-margin-right" name="AddArticle" value="AddArticle">
 							<i class="material-icons">save</i>                    
 						</button>
 					</div>
@@ -112,20 +142,33 @@
 						<th scope="col">Precio</th>
 						<th scope="col">Descuento</th>
 						<th scope="col">Importe</th>
+						<th scope="col"></th>
 						</tr>
 					</thead>
 					<tbody>
-					<tr>
-						<td colspan="6">No hay articulos</td>
-					</tr>
-						<!-- <tr>
-							<td>0004</td>
-							<td>2</td>
-							<td>Articulo 1</td>
-							<td>$100</td>
-							<td>25%</td>
-							<td>$75</td>
-						</tr> -->
+					<?php if($_SESSION['Articulos'] === []){ ?>
+						<tr>
+							<td colspan="6">No hay articulos</td>
+						</tr>
+					<?php }?>
+					<?php foreach($_SESSION['Articulos'] as $key=>$arts){ 
+						?>
+						<tr>
+							<td><?php echo $arts['clave'] ?></td>
+							<td><?php echo $arts['cantidad'] ?></td>
+							<td><?php echo $arts['descripcion'] ?></td>
+							<td><?php echo $arts['precio'] ?></td>
+							<td><?php echo $arts['descuento'] ?></td>
+							<td><?php echo $arts['importe'] ?></td>
+							<td>
+							<form>
+								<button style="margin-right:10px;" type="submit" name="deleteArticle" value="<?php print $key ?>" class="btn btn-link" aria-label="Close">
+									<i class="material-icons">delete</i>
+								</button>
+							</form>
+							</td>
+						</tr>
+					<?php }?>
 
 					</tbody>
 				
@@ -138,17 +181,22 @@
 				<div class="col-5" style="text-align:end">
 					<h3 for="exampleFormControlInput1">Subtotal:</h3> 
 					<h3 for="exampleFormControlInput1">Descuento:</h3>
-					<h3 for="exampleFormControlInput1">Impuesto:</h3> 
 					<h2 for="exampleFormControlInput1">Total:</h2> 
 				</div>
 
 				<div class="col-5" style="text-align:end">
-					<h3 for="exampleFormControlInput1">$ 2,000</h3>
-					<h3 for="exampleFormControlInput1">$ 300</h3> 
-					<h3 for="exampleFormControlInput1">$ 250</h3> 
-					<h2 for="exampleFormControlInput1">$ 1,950</h2>
+					<h3 for="exampleFormControlInput1">$ <?php print $subtotal ?></h3>
+					<h3 for="exampleFormControlInput1">$ <?php print $descuento ?></h3> 
+					<h2 for="exampleFormControlInput1">$ <?php print $total ?></h2>
 				</div>
 				<div class="col-2"> </div>
+			</div>
+			<div class="row" style="margin-top:50px">
+			
+			<div class="col-10" style="text-align:end">
+				<button type="button" class="btn btn-outline-primary">Enviar Cotización</button>
+			</div>
+			
 			</div>
 		</div>
 	</div>
@@ -218,7 +266,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+
       </div>
     </div>
   </div>
@@ -252,8 +300,8 @@
 </style>
 <?php 
 	function precio($arti){
-		$ieps = $arti->ieps ? ($arti->ieps->porcentaje / 100) + 1 : 1;
-		$iva = $arti->iva ? ($arti->iva->porcentaje / 100) + 1 : 1;
+		$ieps = isset($arti->ieps) && $arti->ieps ? ($arti->ieps->porcentaje / 100) + 1 : 1;
+		$iva = isset($arti->iva) && $arti->iva ? ($arti->iva->porcentaje / 100) + 1 : 1;
 		foreach($arti->precios as $precio){ 
 			if(isset($cliente)){
 				if($cliente->idlistaprecio === $precio->idlistaprecio){
